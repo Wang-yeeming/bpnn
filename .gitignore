@@ -1,0 +1,8 @@
+bpnn.sln
+bpnn.vcxproj
+bpnn.vcxproj.filters
+bpnn.vcxproj.user
+*.csv
+.vs
+Debug
+*~

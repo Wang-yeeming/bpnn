@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 typedef struct node_t node_t;
 
 class bpnn {
@@ -21,11 +19,15 @@ class bpnn {
     // 输出层节点数目
     size_t output_num = 0;
     // 输入层
-    vector<node_t*> input;
+    std::vector<node_t*> input;
     // 隐含层（1层）
-    vector<node_t*> hidden;
+    std::vector<node_t*> hidden;
     // 输出层
-    vector<node_t*> output;
+    std::vector<node_t*> output;
+    // 特征向量组
+    std::vector<double>* feature_vector;
+    // 目标向量组
+    std::vector<std::string>* target_vector;
 
    public:
     // 无参构造器
@@ -39,9 +41,11 @@ class bpnn {
     // 指定输出层节点数目
     void setOutputNum(int num);
     // 读取训练集数据（csv格式）
-    void readTrainSet(string path);
+    void readTrainSet(std::string path);
     // 读取测试集数据（csv格式）
-    void readTestSet(string path);
+    void readTestSet(std::string path);
+    // 生成BP神经网络
+    void train();
 };
 
 #endif

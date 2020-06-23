@@ -34,6 +34,8 @@ class bpnn {
     bpnn();
     // 有参构造器：指定输入层节点、隐含层（1层）节点、输出层节点数目
     bpnn(int input_num, int hidden_num, int output_num);
+    // 析构器
+    ~bpnn();
     // 指定输入层节点数目
     void setInputNum(int num);
     // 指定隐含层（1层）节点数目

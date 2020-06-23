@@ -16,6 +16,17 @@ static std::vector<std::string> cache;
 
 bpnn::bpnn() {}
 
+bpnn::~bpnn() {
+    delete[this->input_num] this->feature_vector;
+    delete[this->output_num] this->target_vector;
+    for (auto it : this->input)
+        delete it;
+    for (auto it : this->hidden)
+        delete it;
+    for (auto it : this->output)
+        delete it;
+}
+
 bpnn::bpnn(int i, int h, int o) {
     TRY if (i <= 0) throw "输入层节点数目必须大于0";
     if (h <= 0) throw "隐含层节点数目必须大于0";

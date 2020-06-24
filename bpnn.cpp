@@ -8,24 +8,21 @@
         exit(-1);                      \
     }
 
+// 神经元节点
 typedef struct node_t {
     void* content;
 } node_t;
 
+// 权重
+typedef struct weight_t {
+    double param;  // 权值
+    node_t* src;   // 源节点
+    node_t* dist;  // 目标节点
+} weight_t;
+
 static std::vector<std::string> cache;
 
 bpnn::bpnn() {}
-
-bpnn::~bpnn() {
-    delete[this->input_num] this->feature_vector;
-    delete[this->output_num] this->target_vector;
-    for (auto it : this->input)
-        delete it;
-    for (auto it : this->hidden)
-        delete it;
-    for (auto it : this->output)
-        delete it;
-}
 
 bpnn::bpnn(int i, int h, int o) {
     TRY if (i <= 0) throw "输入层节点数目必须大于0";
@@ -35,6 +32,14 @@ bpnn::bpnn(int i, int h, int o) {
     this->input_num = i;
     this->hidden_num = h;
     this->output_num = o;
+}
+
+bpnn::~bpnn() {
+    delete[] this->feature_vector;
+    delete[] this->target_vector;
+    for (auto it : this->input) delete it;
+    for (auto it : this->hidden) delete it;
+    for (auto it : this->output) delete it;
 }
 
 void bpnn::setInputNum(int num) {
@@ -144,10 +149,12 @@ void bpnn::readTestSet(std::string path) {
 }
 
 void bpnn::train() {
+    // 确保所有节点数目已经确定
     TRY if (this->input_num == 0) throw "请指定输入层节点数目";
     if (this->hidden_num == 0) throw "请指定隐含层节点数目";
     if (this->output_num == 0) throw "请指定输出层节点数目";
     CATCH
+    // 初始化
     node_t* nin = new node_t[this->input_num];
     for (unsigned i = 0; i < this->input_num; i++)
         this->input.push_back(&nin[i]);

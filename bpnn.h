@@ -8,7 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "addLayer.h"  // ¼Ó·¨²ã
+#include "mulLayer.h"  // ³Ë·¨²ã
+#include "sigLayer.h"  // Sigmoid²ã
+
 typedef struct node_t node_t;
+typedef struct weight_t weight_t;
 
 class bpnn {
    private:

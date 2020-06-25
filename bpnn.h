@@ -11,6 +11,7 @@
 #include "addLayer.h"  // 加法层
 #include "mulLayer.h"  // 乘法层
 #include "sigLayer.h"  // Sigmoid层
+#include "matrix.h" // 矩阵运算类
 
 typedef struct node_t node_t;
 typedef struct weight_t weight_t;

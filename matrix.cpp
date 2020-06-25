@@ -63,17 +63,17 @@ matrix operator+(const matrix& A, const matrix& B) {
 
 matrix operator*(const matrix& A, const matrix& B) {
     try {
-        if (A.line != B.col || A.col != B.line) throw "无法进行矩阵乘法运算";
+        if (A.line != B.col) throw "无法进行矩阵乘法运算";
     } catch (const char* msg) {
         std::cout << msg << std::endl;
         system("pause");
         exit(-1);
     }
-    matrix* C = new matrix(A.line, B.line);
+    matrix* C = new matrix(A.line, B.col);
     for (int i = 0; i < C->line; i++)
         for (int j = 0; j < C->col; j++)
-            for (int k = 0; k < C->line; k++)
-                C->data[i][j] += A.data[i][k] * B.data[k][j];
+            for (int m = 0; m < C->line; m++)
+                C->data[i][j] += A.data[i][m] * B.data[m][j];
     return *C;
 }
 

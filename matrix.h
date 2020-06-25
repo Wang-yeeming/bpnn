@@ -4,14 +4,24 @@
  */
 #ifndef MATRIX_INCLUDED
 #define MATRIX_INCLUDED
+
 #include <iomanip>
 #include <iostream>
+
 class matrix {
+    friend class sigLayer;
+
    private:
-    int line;       // 行数
-    int col;        // 列数
-    double** data;  // 数据
+    // 数据
+    double** data;
+
    public:
+    // 行数
+    int line;
+    // 列数
+    int col;
+    // 默认构造器
+    matrix();
     // 构造器
     matrix(int line, int col);
     // 拷贝构造函数
@@ -22,6 +32,8 @@ class matrix {
     void input(double array[]);
     // 以二维数组的形式输出矩阵
     double** output();
+    // 矩阵的转置
+    friend matrix operator~(const matrix& A);
     // 矩阵加法运算
     friend matrix operator+(const matrix& A, const matrix& B);
     // 矩阵乘法运算

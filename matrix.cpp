@@ -1,5 +1,7 @@
 #include "matrix.h"
 
+matrix::matrix() {}
+
 matrix::matrix(int l, int c) {
     this->line = l;
     this->col = c;
@@ -43,6 +45,13 @@ double** matrix::output() {
     for (int i = 0; i < this->line; i++) array[i] = new double[this->col];
     *array = *this->data;
     return array;
+}
+
+matrix operator~(const matrix& A) {
+    matrix* B = new matrix(A.col, A.line);
+    for (int i = 0; i < B->line; i++)
+        for (int j = 0; j < B->col; j++) B->data[i][j] = A.data[j][i];
+    return *B;
 }
 
 matrix operator+(const matrix& A, const matrix& B) {

@@ -10,6 +10,7 @@
 
 class matrix {
     friend class sigLayer;
+    friend class sofLayer;
 
    private:
     // 数据
@@ -22,10 +23,12 @@ class matrix {
     int col;
     // 默认构造器
     matrix();
-    // 构造器
+    // 构造m*n矩阵
     matrix(int line, int col);
     // 拷贝构造函数
     matrix(const matrix& obj);
+    // 构造行向量
+    matrix(int col);
     // 析构器
     ~matrix();
     // 通过输入一维数组构造矩阵
@@ -36,8 +39,12 @@ class matrix {
     friend matrix operator~(const matrix& A);
     // 矩阵加法运算
     friend matrix operator+(const matrix& A, const matrix& B);
+    // 矩阵减法运算
+    friend matrix operator-(const matrix& A, const matrix& B);
     // 矩阵乘法运算
     friend matrix operator*(const matrix& A, const matrix& B);
+    // 矩阵除以常数
+    friend matrix operator/(const matrix& A, const double& C);
     // 格式化输出
     friend std::ostream& operator<<(std::ostream& os, const matrix& A);
 };

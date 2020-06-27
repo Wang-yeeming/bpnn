@@ -8,9 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "affine.h"   // Affine≤„
+#include "matrix.h"   // æÿ’Û‘ÀÀ„¿‡
 #include "sigmoid.h"  // Sigmoid≤„
-#include "matrix.h" // æÿ’Û‘ÀÀ„¿‡
-#include "affine.h" // Affine≤„
+#include "softmax.h"  // Softmax≤„
 
 typedef struct node_t node_t;
 typedef struct weight_t weight_t;

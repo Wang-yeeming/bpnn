@@ -24,6 +24,16 @@ matrix::matrix(const matrix& obj) {
         for (int j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
 }
 
+matrix::matrix(int c) {
+    this->line = 1;
+    this->col = c;
+    // 分配内存空间
+    this->data = new double*[1];
+    this->data[0] = new double[c];
+    // 初始化为零矩阵
+    for (int j = 0; j < c; j++) this->data[0][j] = 0;
+}
+
 matrix::~matrix() {
     for (int i = 0; i < this->line; i++) delete[] this->data[i];
 
@@ -70,11 +80,27 @@ matrix operator+(const matrix& A, const matrix& B) {
     return *C;
 }
 
+matrix operator-(const matrix& A, const matrix& B) {
+    try {
+        if (A.line != B.line) throw "矩阵减法要求行数相同";
+        if (A.col != B.col) throw "矩阵减法要求列数相同";
+    } catch (const char* msg) {
+        std::cerr << msg << std::endl;
+        system("pause");
+        exit(-1);
+    }
+    matrix* C = new matrix(A.line, A.col);
+    for (int i = 0; i < C->line; i++)
+        for (int j = 0; j < C->col; j++)
+            C->data[i][j] = A.data[i][j] - B.data[i][j];
+    return *C;
+}
+
 matrix operator*(const matrix& A, const matrix& B) {
     try {
         if (A.line != B.col) throw "无法进行矩阵乘法运算";
     } catch (const char* msg) {
-        std::cout << msg << std::endl;
+        std::cerr << msg << std::endl;
         system("pause");
         exit(-1);
     }
@@ -84,6 +110,20 @@ matrix operator*(const matrix& A, const matrix& B) {
             for (int m = 0; m < C->line; m++)
                 C->data[i][j] += A.data[i][m] * B.data[m][j];
     return *C;
+}
+
+matrix operator/(const matrix& A, const double& C) {
+    try {
+        if (C == 0) throw "无效的除法运算";
+    } catch (const char* msg) {
+        std::cerr << msg << std::endl;
+        system("pause");
+        exit(-1);
+    }
+    matrix B = A;
+    for (int i = 0; i < B.line; i++)
+        for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] / C;
+    return B;
 }
 
 std::ostream& operator<<(std::ostream& os, const matrix& A) {

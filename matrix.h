@@ -9,6 +9,7 @@
 #include <iostream>
 
 class matrix {
+    friend class affLayer;
     friend class sigLayer;
     friend class sofLayer;
 

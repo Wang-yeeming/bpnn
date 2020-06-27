@@ -9,11 +9,12 @@
 
 class affLayer {
    private:
-    matrix x;
-    matrix weight;
-    matrix bias;
+    matrix x;// 数据域
+    matrix weight;// 权重
+    matrix bias;// 偏置
 
    public:
+    affLayer(matrix weight, matrix bias);
     matrix forward(matrix A);
     matrix backward(matrix dL);
 };

@@ -7,6 +7,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <random>
 
 class matrix {
     friend class affLayer;
@@ -32,6 +33,8 @@ class matrix {
     matrix(int col);
     // 析构器
     ~matrix();
+    // 生成随机数矩阵
+    void randomMatrix(double min, double max);
     // 通过输入一维数组构造矩阵
     void input(double array[]);
     // 以二维数组的形式输出矩阵

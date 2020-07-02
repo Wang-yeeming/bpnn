@@ -14,6 +14,7 @@ bpnn::bpnn(int input_size, int hidden_size, int output_size) {
     this->input_num = input_size;
     this->hidden_num = hidden_size;
     this->output_num = output_size;
+    /*
     // 生成均匀分布的随机数来初始化权重
     std::default_random_engine eng;
     std::uniform_real_distribution<double> u(0, 1);
@@ -29,11 +30,12 @@ bpnn::bpnn(int input_size, int hidden_size, int output_size) {
     // 偏置设为0
     matrix* b1 = new matrix(this->hidden_num);
     this->params["b1"] = *b1;
+    */
 }
 
 bpnn::~bpnn() {
     delete[] this->feature_vector;
-    delete[] this->target_vector;
+    delete[] this->tag_vector;
 }
 
 void bpnn::readTrainSet(std::string path) {
@@ -49,7 +51,7 @@ void bpnn::readTrainSet(std::string path) {
     cache.clear();
     int count = 0;                         // 读取行数计数器
     size_t feature_num = this->input_num;  // 特征向量数目
-    size_t target_num = this->output_num;  // 目标向量数目
+    size_t tag_num = this->output_num;     // 监督向量数目
     while (fin) {
         count++;
         // 从第 2 行开始读入数据
@@ -73,19 +75,19 @@ void bpnn::readTrainSet(std::string path) {
     }
     // 存储特征向量组
     this->feature_vector = new std::vector<double>[feature_num];
-    // 存储目标向量组
-    this->target_vector = new std::vector<std::string>[target_num];
+    // 存储监督向量组
+    this->tag_vector = new std::vector<std::string>[tag_num];
     unsigned tmp;
     unsigned size = cache.size();
     double number;
     std::stringstream ss;
-    for (unsigned i = 1; i <= feature_num + target_num; i++) {
+    for (unsigned i = 1; i <= feature_num + tag_num; i++) {
         for (unsigned j = 1; j <= size; j++) {
-            if (i == feature_num + target_num)
+            if (i == feature_num + tag_num)
                 tmp = 0;
             else
                 tmp = i;
-            if (j % (feature_num + target_num) == tmp) {
+            if (j % (feature_num + tag_num) == tmp) {
                 if (i <= feature_num) {
                     // 将离散型数据转化为连续型数据
                     ss.clear();
@@ -94,8 +96,8 @@ void bpnn::readTrainSet(std::string path) {
                     // 将特征存入特征向量
                     feature_vector[i - 1].push_back(number);
                 } else {
-                    // 将目标存入目标向量
-                    target_vector[i - feature_num - 1].push_back(cache[j - 1]);
+                    // 将监督存入监督向量
+                    tag_vector[i - feature_num - 1].push_back(cache[j - 1]);
                 }
             }
         }
@@ -120,7 +122,7 @@ void bpnn::train() {
     // 初始化
 }
 
-affLayer bpnn::createAffineLayer(matrix weight, matrix bias) {
+affLayer bpnn::createAffineLayer(matrix* weight, matrix* bias) {
     affLayer* affine = new affLayer(weight, bias);
     return *affine;
 }

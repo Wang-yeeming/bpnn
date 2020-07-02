@@ -28,14 +28,8 @@ class bpnn {
     std::map<std::string, matrix> params;
     // 特征向量组
     std::vector<double>* feature_vector;
-    // 目标向量组
-    std::vector<std::string>* target_vector;
-    // 生成Affine层
-    affLayer createAffineLayer(matrix weight, matrix bias);
-    // 生成Sigmoid层
-    sigLayer createSigmoidLayer();
-    // 生成Softmax with loss层
-    sofLayer createSoftmaxWithLossLayer();
+    // 监督向量组
+    std::vector<std::string>* tag_vector;
 
    public:
     // 构造器：生成单层隐含层的BP神经网络
@@ -48,6 +42,12 @@ class bpnn {
     void readTestSet(std::string path);
     // 训练
     void train();
+    // 生成Affine层
+    affLayer createAffineLayer(matrix* weight, matrix* bias);
+    // 生成Sigmoid层
+    sigLayer createSigmoidLayer();
+    // 生成Softmax with loss层
+    sofLayer createSoftmaxWithLossLayer();
 };
 
 #endif

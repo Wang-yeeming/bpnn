@@ -11,8 +11,8 @@ class sigLayer {
     double desigmoid(double x);
 
    public:
-    matrix forward(matrix X);
-    matrix backforward(matrix dL);
+    matrix forward(matrix* X);
+    matrix backforward(matrix* dL);
 };
 
 #endif

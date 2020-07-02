@@ -44,8 +44,12 @@ void matrix::randomMatrix(double min, double max) {
     std::default_random_engine eng;
     std::uniform_real_distribution<double> u(min, max);
     for (int i = 0; i < this->line; i++)
-        for (int j = 0; j < this->col; j++)
-            this->data[i][j] = u(eng);
+        for (int j = 0; j < this->col; j++) this->data[i][j] = u(eng);
+}
+
+void matrix::setZero() {
+    for (int i = 0; i < this->line; i++)
+        for (int j = 0; j < this->col; j++) this->data[i][j] = 0;
 }
 
 void matrix::input(double array[]) {

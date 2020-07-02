@@ -4,9 +4,6 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <map>
-#include <random>
-#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -24,12 +21,10 @@ class bpnn {
     size_t hidden_num = 0;
     // 输出层节点数目
     size_t output_num = 0;
-    // 参数字典
-    std::map<std::string, matrix> params;
-    // 特征向量组
-    std::vector<double>* feature_vector;
-    // 监督向量组
-    std::vector<std::string>* tag_vector;
+    // 输入数据矩阵组
+    std::vector<matrix> inMatVec;
+    // 监督数据矩阵组
+    std::vector<matrix> tagMatVec;
 
    public:
     // 构造器：生成单层隐含层的BP神经网络

@@ -10,6 +10,7 @@
 #include <random>
 
 class matrix {
+    friend class bpnn;
     friend class affLayer;
     friend class sigLayer;
     friend class sofLayer;
@@ -35,6 +36,8 @@ class matrix {
     ~matrix();
     // 生成随机数矩阵
     void randomMatrix(double min, double max);
+    // 矩阵清零
+    void setZero();
     // 通过输入一维数组构造矩阵
     void input(double array[]);
     // 以二维数组的形式输出矩阵

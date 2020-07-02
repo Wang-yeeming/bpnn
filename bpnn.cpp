@@ -33,10 +33,7 @@ bpnn::bpnn(int input_size, int hidden_size, int output_size) {
     */
 }
 
-bpnn::~bpnn() {
-    delete[] this->feature_vector;
-    delete[] this->tag_vector;
-}
+bpnn::~bpnn() {}
 
 void bpnn::readTrainSet(std::string path) {
     char data[128];  // 缓冲区
@@ -74,15 +71,17 @@ void bpnn::readTrainSet(std::string path) {
         }
     }
     // 存储特征向量组
-    this->feature_vector = new std::vector<double>[feature_num];
+    std::vector<double>* feature_vector = new std::vector<double>[feature_num];
     // 存储监督向量组
-    this->tag_vector = new std::vector<std::string>[tag_num];
-    unsigned tmp;
-    unsigned size = cache.size();
+    std::vector<int>* tag_vector = new std::vector<int>[tag_num];
+    size_t tmp;
+    size_t size = cache.size();
     double number;
+    int integer;
     std::stringstream ss;
-    for (unsigned i = 1; i <= feature_num + tag_num; i++) {
-        for (unsigned j = 1; j <= size; j++) {
+    // 将cache缓存的内容存到向量组内
+    for (size_t i = 1; i <= feature_num + tag_num; i++) {
+        for (size_t j = 1; j <= size; j++) {
             if (i == feature_num + tag_num)
                 tmp = 0;
             else
@@ -97,10 +96,22 @@ void bpnn::readTrainSet(std::string path) {
                     feature_vector[i - 1].push_back(number);
                 } else {
                     // 将监督存入监督向量
-                    tag_vector[i - feature_num - 1].push_back(cache[j - 1]);
+                    ss.clear();
+                    ss << cache[j - 1];
+                    ss >> integer;
+                    tag_vector[i - feature_num - 1].push_back(integer);
                 }
             }
         }
+    }
+    // 将输入数据转化成矩阵存储
+    matrix m(feature_num);
+    size = feature_vector[0].size();
+    for (size_t i = 0; i < size; i++) {
+        m.setZero();
+        for (size_t j = 0; j < feature_num; j++)
+            m.data[0][j] = feature_vector[j][i];
+        this->inMatVec.push_back(m);
     }
 }
 

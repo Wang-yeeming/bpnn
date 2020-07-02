@@ -20,6 +20,7 @@ class sofLayer {
     matrix softmax(const matrix& x);
 
    public:
+    // ·µ»ØËðÊ§
     double forward(const matrix& X, const matrix& T);
     matrix backward(const matrix& dL);
 };

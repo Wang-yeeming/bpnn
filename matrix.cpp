@@ -134,7 +134,7 @@ matrix operator-(const matrix& A, const matrix& B) {
 
 matrix operator*(const matrix& A, const matrix& B) {
     try {
-        if (A.line != B.col) throw "无法进行矩阵乘法运算";
+        if (A.col != B.line) throw "无法进行矩阵乘法运算";
     } catch (const char* msg) {
         std::cerr << msg << std::endl;
         system("pause");

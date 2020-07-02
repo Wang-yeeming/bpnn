@@ -25,6 +25,8 @@ class bpnn {
     std::vector<matrix> inMatVec;
     // 监督数据矩阵组
     std::vector<matrix> tagMatVec;
+    // 数据数量
+    size_t size;
     // 构造器
     bpnn(int input_size, int output_size);
     // 析构器
@@ -36,7 +38,7 @@ class bpnn {
     // 训练
     void train();
     // 生成Affine层
-    affLayer createAffineLayer(matrix* weight, matrix* bias);
+    affLayer createAffineLayer(const matrix& weight, const matrix& bias);
     // 生成Sigmoid层
     sigLayer createSigmoidLayer();
     // 生成Softmax with loss层

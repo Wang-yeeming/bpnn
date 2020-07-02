@@ -57,13 +57,13 @@ void bpnn::readTrainSet(std::string path) {
     // 存储监督向量组
     std::vector<int>* tag_vector = new std::vector<int>[tag_num];
     size_t tmp;
-    size_t size = cache.size();
+    size_t s = cache.size();
     double number;
     int integer;
     std::stringstream ss;
     // 将cache缓存的内容存到向量组内
     for (size_t i = 1; i <= feature_num + tag_num; i++) {
-        for (size_t j = 1; j <= size; j++) {
+        for (size_t j = 1; j <= s; j++) {
             if (i == feature_num + tag_num)
                 tmp = 0;
             else
@@ -86,7 +86,7 @@ void bpnn::readTrainSet(std::string path) {
             }
         }
     }
-    size = feature_vector[0].size();
+    this->size = feature_vector[0].size();
     // 将输入数据转化成矩阵存储
     matrix m(feature_num);
     for (size_t i = 0; i < size; i++) {
@@ -122,8 +122,8 @@ void bpnn::train() {
     // 初始化
 }
 
-affLayer bpnn::createAffineLayer(matrix* weight, matrix* bias) {
-    affLayer* affine = new affLayer(*weight, *bias);
+affLayer bpnn::createAffineLayer(const matrix& weight, const matrix& bias) {
+    affLayer* affine = new affLayer(weight, bias);
     return *affine;
 }
 

@@ -17,18 +17,16 @@ class bpnn {
    private:
     // 输入层节点数目
     size_t input_num = 0;
-    // 隐含层（1层）节点数目
-    size_t hidden_num = 0;
     // 输出层节点数目
     size_t output_num = 0;
+
+   public:
     // 输入数据矩阵组
     std::vector<matrix> inMatVec;
     // 监督数据矩阵组
     std::vector<matrix> tagMatVec;
-
-   public:
-    // 构造器：生成单层隐含层的BP神经网络
-    bpnn(int input_size, int hidden_size, int output_size);
+    // 构造器
+    bpnn(int input_size, int output_size);
     // 析构器
     ~bpnn();
     // 读取训练集数据（csv格式）

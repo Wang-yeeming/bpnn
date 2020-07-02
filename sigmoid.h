@@ -8,11 +8,11 @@
 class sigLayer {
    private:
     double sigmoid(double x);
-    double desigmoid(double x);
+    double dsigmoid(double x);
 
    public:
-    matrix forward(matrix* X);
-    matrix backforward(matrix* dL);
+    matrix forward(const matrix& X);
+    matrix backward(const matrix& dL);
 };
 
 #endif

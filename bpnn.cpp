@@ -10,27 +10,9 @@
 
 static std::vector<std::string> cache;
 
-bpnn::bpnn(int input_size, int hidden_size, int output_size) {
+bpnn::bpnn(int input_size, int output_size) {
     this->input_num = input_size;
-    this->hidden_num = hidden_size;
     this->output_num = output_size;
-    /*
-    // 生成均匀分布的随机数来初始化权重
-    std::default_random_engine eng;
-    std::uniform_real_distribution<double> u(0, 1);
-    // 初始化权重
-    matrix* w1 = new matrix(this->hidden_num);
-    double* arr1 = new double[this->hidden_num];
-    for (size_t i = 0; i < this->hidden_num; i++) arr1[i] = u(eng);
-    w1->input(arr1);
-    // 转为列向量
-    *w1 = ~(*w1);
-    delete[] arr1;
-    this->params["w1"] = *w1;
-    // 偏置设为0
-    matrix* b1 = new matrix(this->hidden_num);
-    this->params["b1"] = *b1;
-    */
 }
 
 bpnn::~bpnn() {}
@@ -104,14 +86,21 @@ void bpnn::readTrainSet(std::string path) {
             }
         }
     }
+    size = feature_vector[0].size();
     // 将输入数据转化成矩阵存储
     matrix m(feature_num);
-    size = feature_vector[0].size();
     for (size_t i = 0; i < size; i++) {
         m.setZero();
         for (size_t j = 0; j < feature_num; j++)
             m.data[0][j] = feature_vector[j][i];
         this->inMatVec.push_back(m);
+    }
+    // 将监督数据转化为矩阵存储
+    matrix n(tag_num);
+    for (size_t i = 0; i < size; i++) {
+        n.setZero();
+        for (size_t j = 0; j < tag_num; j++) n.data[0][j] = tag_vector[j][i];
+        this->tagMatVec.push_back(n);
     }
 }
 
@@ -134,7 +123,7 @@ void bpnn::train() {
 }
 
 affLayer bpnn::createAffineLayer(matrix* weight, matrix* bias) {
-    affLayer* affine = new affLayer(weight, bias);
+    affLayer* affine = new affLayer(*weight, *bias);
     return *affine;
 }
 

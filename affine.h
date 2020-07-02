@@ -14,9 +14,9 @@ class affLayer {
     matrix bias;    // Æ«ÖÃ
 
    public:
-    affLayer(matrix* weight, matrix* bias);
-    matrix forward(matrix* A);
-    matrix backward(matrix* dL);
+    affLayer(const matrix& weight, const matrix& bias);
+    matrix forward(const matrix& A);
+    matrix backward(const matrix& dL);
 };
 
 #endif

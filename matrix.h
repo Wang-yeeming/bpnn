@@ -30,6 +30,8 @@ class matrix {
     matrix(int line, int col);
     // 拷贝构造函数
     matrix(const matrix& obj);
+    // 移动构造函数
+    matrix(const matrix&& obj);
     // 构造行向量
     matrix(int col);
     // 析构器
@@ -42,6 +44,8 @@ class matrix {
     void input(double array[]);
     // 以二维数组的形式输出矩阵
     double** output();
+    // 深拷贝
+    matrix operator=(const matrix& A);
     // 矩阵的转置
     friend matrix operator~(const matrix& A);
     // 矩阵加法运算

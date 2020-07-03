@@ -2,15 +2,15 @@
 
 matrix::matrix() {}
 
-matrix::matrix(int l, int c) {
+matrix::matrix(size_t l, size_t c) {
     this->line = l;
     this->col = c;
     // 分配内存空间
     this->data = new double*[l];
-    for (int i = 0; i < l; i++) this->data[i] = new double[c];
+    for (size_t i = 0; i < l; i++) this->data[i] = new double[c];
     // 初始化为零矩阵
-    for (int i = 0; i < l; i++)
-        for (int j = 0; j < c; j++) this->data[i][j] = 0;
+    for (size_t i = 0; i < l; i++)
+        for (size_t j = 0; j < c; j++) this->data[i][j] = 0;
 }
 
 matrix::matrix(const matrix& obj) {
@@ -18,10 +18,10 @@ matrix::matrix(const matrix& obj) {
     this->col = obj.col;
     // 分配内存空间
     this->data = new double*[obj.line];
-    for (int i = 0; i < obj.line; i++) this->data[i] = new double[obj.col];
+    for (size_t i = 0; i < obj.line; i++) this->data[i] = new double[obj.col];
     // 拷贝值
-    for (int i = 0; i < obj.line; i++)
-        for (int j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
+    for (size_t i = 0; i < obj.line; i++)
+        for (size_t j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
 }
 
 matrix::matrix(const matrix&& obj) {
@@ -29,24 +29,24 @@ matrix::matrix(const matrix&& obj) {
     this->col = obj.col;
     // 分配内存空间
     this->data = new double*[obj.line];
-    for (int i = 0; i < obj.line; i++) this->data[i] = new double[obj.col];
+    for (size_t i = 0; i < obj.line; i++) this->data[i] = new double[obj.col];
     // 拷贝值
-    for (int i = 0; i < obj.line; i++)
-        for (int j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
+    for (size_t i = 0; i < obj.line; i++)
+        for (size_t j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
 }
 
-matrix::matrix(int c) {
+matrix::matrix(size_t c) {
     this->line = 1;
     this->col = c;
     // 分配内存空间
     this->data = new double*[1];
     this->data[0] = new double[c];
     // 初始化为零矩阵
-    for (int j = 0; j < c; j++) this->data[0][j] = 0;
+    for (size_t j = 0; j < c; j++) this->data[0][j] = 0;
 }
 
 matrix::~matrix() {
-    for (int i = 0; i < this->line; i++) delete[] this->data[i];
+    for (size_t i = 0; i < this->line; i++) delete[] this->data[i];
 
     delete[] this->data;
 }
@@ -55,19 +55,19 @@ void matrix::randomMatrix(double min, double max) {
     std::default_random_engine eng;
     eng.seed(time(NULL));
     std::normal_distribution<double> n(min, max);
-    for (int i = 0; i < this->line; i++)
-        for (int j = 0; j < this->col; j++) this->data[i][j] = n(eng);
+    for (size_t i = 0; i < this->line; i++)
+        for (size_t j = 0; j < this->col; j++) this->data[i][j] = n(eng);
 }
 
 void matrix::setZero() {
-    for (int i = 0; i < this->line; i++)
-        for (int j = 0; j < this->col; j++) this->data[i][j] = 0;
+    for (size_t i = 0; i < this->line; i++)
+        for (size_t j = 0; j < this->col; j++) this->data[i][j] = 0;
 }
 
 void matrix::input(double array[]) {
-    int i = 0;
-    int j = 0;
-    for (int a = 0; a < this->col * this->line; a++) {
+    size_t i = 0;
+    size_t j = 0;
+    for (size_t a = 0; a < this->col * this->line; a++) {
         i = a / this->col;
         j = a % this->col;
         this->data[i][j] = array[a];
@@ -76,7 +76,7 @@ void matrix::input(double array[]) {
 
 double** matrix::output() {
     double** array = new double*[this->line];
-    for (int i = 0; i < this->line; i++) array[i] = new double[this->col];
+    for (size_t i = 0; i < this->line; i++) array[i] = new double[this->col];
     *array = *this->data;
     return array;
 }
@@ -86,10 +86,10 @@ matrix matrix::operator=(const matrix& A) {
     this->col = A.col;
     // 分配内存空间
     this->data = new double*[A.line];
-    for (int i = 0; i < A.line; i++) this->data[i] = new double[A.col];
+    for (size_t i = 0; i < A.line; i++) this->data[i] = new double[A.col];
     // 拷贝值
-    for (int i = 0; i < A.line; i++)
-        for (int j = 0; j < A.col; j++) this->data[i][j] = A.data[i][j];
+    for (size_t i = 0; i < A.line; i++)
+        for (size_t j = 0; j < A.col; j++) this->data[i][j] = A.data[i][j];
     return *this;
 }
 
@@ -100,8 +100,8 @@ matrix matrix::operator-=(const matrix& A) {
 
 matrix operator~(const matrix& A) {
     matrix B(A.col, A.line);
-    for (int i = 0; i < B.line; i++)
-        for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[j][i];
+    for (size_t i = 0; i < B.line; i++)
+        for (size_t j = 0; j < B.col; j++) B.data[i][j] = A.data[j][i];
     return B;
 }
 
@@ -115,16 +115,16 @@ matrix operator+(const matrix& A, const matrix& B) {
         exit(-1);
     }
     matrix C(A.line, A.col);
-    for (int i = 0; i < C.line; i++)
-        for (int j = 0; j < C.col; j++)
+    for (size_t i = 0; i < C.line; i++)
+        for (size_t j = 0; j < C.col; j++)
             C.data[i][j] = A.data[i][j] + B.data[i][j];
     return C;
 }
 
 matrix operator+(const matrix& A, const double& B) {
     matrix C(A.line, A.col);
-    for (int i = 0; i < C.line; i++)
-        for (int j = 0; j < C.col; j++) C.data[i][j] = A.data[i][j] + B;
+    for (size_t i = 0; i < C.line; i++)
+        for (size_t j = 0; j < C.col; j++) C.data[i][j] = A.data[i][j] + B;
     return C;
 }
 
@@ -138,8 +138,8 @@ matrix operator-(const matrix& A, const matrix& B) {
         exit(-1);
     }
     matrix C(A.line, A.col);
-    for (int i = 0; i < C.line; i++)
-        for (int j = 0; j < C.col; j++)
+    for (size_t i = 0; i < C.line; i++)
+        for (size_t j = 0; j < C.col; j++)
             C.data[i][j] = A.data[i][j] - B.data[i][j];
     return C;
 }
@@ -153,17 +153,17 @@ matrix operator*(const matrix& A, const matrix& B) {
         exit(-1);
     }
     matrix C(A.line, B.col);
-    for (int i = 0; i < C.line; i++)
-        for (int j = 0; j < C.col; j++)
-            for (int m = 0; m < A.col; m++)
+    for (size_t i = 0; i < C.line; i++)
+        for (size_t j = 0; j < C.col; j++)
+            for (size_t m = 0; m < A.col; m++)
                 C.data[i][j] += A.data[i][m] * B.data[m][j];
     return C;
 }
 
 matrix operator*(const matrix& A, const double& C) {
     matrix B(A.line, A.col);
-    for (int i = 0; i < B.line; i++)
-        for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] * C;
+    for (size_t i = 0; i < B.line; i++)
+        for (size_t j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] * C;
     return B;
 }
 
@@ -176,14 +176,14 @@ matrix operator/(const matrix& A, const double& C) {
         exit(-1);
     }
     matrix B(A.line, A.col);
-    for (int i = 0; i < B.line; i++)
-        for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] / C;
+    for (size_t i = 0; i < B.line; i++)
+        for (size_t j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] / C;
     return B;
 }
 
 std::ostream& operator<<(std::ostream& os, const matrix& A) {
-    for (int i = 0; i < A.line; i++) {
-        for (int j = 0; j < A.col; j++) {
+    for (size_t i = 0; i < A.line; i++) {
+        for (size_t j = 0; j < A.col; j++) {
             if (j == 0) {
                 if (i == 0)
                     os << std::left << std::setw(3) << "┏";

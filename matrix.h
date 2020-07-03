@@ -21,19 +21,19 @@ class matrix {
 
    public:
     // 行数
-    int line;
+    size_t line;
     // 列数
-    int col;
+    size_t col;
     // 默认构造器
     matrix();
     // 构造m*n矩阵
-    matrix(int line, int col);
+    matrix(size_t line, size_t col);
     // 拷贝构造函数
     matrix(const matrix& obj);
     // 移动构造函数
     matrix(const matrix&& obj);
     // 构造行向量
-    matrix(int col);
+    matrix(size_t col);
     // 析构器
     ~matrix();
     // 生成随机数矩阵

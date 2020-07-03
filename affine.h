@@ -12,6 +12,7 @@ class affLayer {
     matrix bias;    // 偏置
     matrix dw;      // 权值的导数
     matrix db;      // 偏置的导数
+    affLayer();
     affLayer(const matrix& weight, const matrix& bias);
     matrix forward(const matrix& A);
     matrix backward(const matrix& dL);

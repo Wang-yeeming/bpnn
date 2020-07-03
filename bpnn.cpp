@@ -15,8 +15,34 @@ bpnn::bpnn(size_t input_size, size_t hidden_size, size_t output_size) {
     this->hidden_num = hidden_size;
     this->output_num = output_size;
     this->size = 0;
-    this->inMatVec.clear();
-    this->tagMatVec.clear();
+}
+
+double bpnn::accuracy() {
+    size_t test_size = this->test_inMatVec.size();
+    affLayer affine1 = this->affineLayer1;
+    affLayer affine2 = this->affineLayer2;
+    sigLayer sigmoid = this->sigmoidLayer;
+    sofLayer last = this->lastLayer;
+    matrix a1, a2, s1, out;
+    double right = 0;
+    size_t max1, max2;
+    for (size_t i = 0; i < test_size; i++) {
+        max1 = 0;
+        max2 = 0;
+        a1 = affine1.forward(this->test_inMatVec[i]);
+        s1 = sigmoid.forward(a1);
+        a2 = affine2.forward(s1);
+        last.forward(a2, this->test_tagMatVec[i]);
+        out = last.out;
+        for (size_t j = 0; j < out.col; j++)
+            if (out.data[0][max1] < out.data[0][j]) max1 = j;
+        for (size_t j = 0; j < this->test_tagMatVec[i].col; j++)
+            if (this->test_tagMatVec[i].data[0][max2] <
+                this->test_tagMatVec[i].data[0][j])
+                max2 = j;
+        if (max1 == max2) right++;
+    }
+    return right / test_size;
 }
 
 void bpnn::readTrainSet(std::string path) {
@@ -27,15 +53,13 @@ void bpnn::readTrainSet(std::string path) {
     // 检查文件是否有效
     TRY if (!fin) throw "打开文件失败";
     CATCH
-    fin >> data;
     std::string::size_type start, end;  // 分割子串用
     cache.clear();
-    int count = 0;                         // 读取行数计数器
+    size_t count = 0;                      // 读取行数计数器
     size_t feature_num = this->input_num;  // 特征向量数目
     size_t tag_num = this->output_num;     // 监督向量数目
     while (fin) {
         count++;
-        // 从第 2 行开始读入数据
         fin >> data;
         str = data;
         start = 0;
@@ -57,11 +81,11 @@ void bpnn::readTrainSet(std::string path) {
     // 存储特征向量组
     std::vector<double>* feature_vector = new std::vector<double>[feature_num];
     // 存储监督向量组
-    std::vector<int>* tag_vector = new std::vector<int>[tag_num];
+    std::vector<size_t>* tag_vector = new std::vector<size_t>[tag_num];
     size_t tmp;
     size_t s = cache.size();
     double number;
-    int integer;
+    size_t size_teger;
     std::stringstream ss;
     // 将cache缓存的内容存到向量组内
     for (size_t i = 1; i <= feature_num + tag_num; i++) {
@@ -82,8 +106,8 @@ void bpnn::readTrainSet(std::string path) {
                     // 将监督存入监督向量
                     ss.clear();
                     ss << cache[j - 1];
-                    ss >> integer;
-                    tag_vector[i - feature_num - 1].push_back(integer);
+                    ss >> size_teger;
+                    tag_vector[i - feature_num - 1].push_back(size_teger);
                 }
             }
         }
@@ -111,12 +135,83 @@ void bpnn::readTestSet(std::string path) {
     std::string str;
     std::ifstream fin;  // 文件输入流
     fin.open(path, std::ios::in);
-    fin >> data;
+    // 检查文件是否有效
+    TRY if (!fin) throw "打开文件失败";
+    CATCH
+    std::string::size_type start, end;  // 分割子串用
+    cache.clear();
+    size_t count = 0;                      // 读取行数计数器
+    size_t feature_num = this->input_num;  // 特征向量数目
+    size_t tag_num = this->output_num;     // 监督向量数目
     while (fin) {
-        // 从第 2 行开始读入数据
+        count++;
         fin >> data;
         str = data;
-        if (str.compare("") != 0) std::cout << str << std::endl;
+        start = 0;
+        if (str.compare("") != 0) {
+            // 分割字符串
+            while (true) {
+                end = str.find(",");
+                if (end != std::string::npos) {
+                    cache.push_back(str.substr(start, end - start));
+                    start = 0;
+                    str = str.substr(end + 1, str.length() - end - 1);
+                } else {
+                    cache.push_back(str);
+                    break;
+                }
+            }
+        }
+    }
+    // 存储特征向量组
+    std::vector<double>* feature_vector = new std::vector<double>[feature_num];
+    // 存储监督向量组
+    std::vector<size_t>* tag_vector = new std::vector<size_t>[tag_num];
+    size_t tmp;
+    size_t s = cache.size();
+    double number;
+    size_t size_teger;
+    std::stringstream ss;
+    // 将cache缓存的内容存到向量组内
+    for (size_t i = 1; i <= feature_num + tag_num; i++) {
+        for (size_t j = 1; j <= s; j++) {
+            if (i == feature_num + tag_num)
+                tmp = 0;
+            else
+                tmp = i;
+            if (j % (feature_num + tag_num) == tmp) {
+                if (i <= feature_num) {
+                    // 将离散型数据转化为连续型数据
+                    ss.clear();
+                    ss << cache[j - 1];
+                    ss >> number;
+                    // 将特征存入特征向量
+                    feature_vector[i - 1].push_back(number);
+                } else {
+                    // 将监督存入监督向量
+                    ss.clear();
+                    ss << cache[j - 1];
+                    ss >> size_teger;
+                    tag_vector[i - feature_num - 1].push_back(size_teger);
+                }
+            }
+        }
+    }
+    this->size = feature_vector[0].size();
+    // 将输入数据转化成矩阵存储
+    matrix m(feature_num);
+    for (size_t i = 0; i < size; i++) {
+        m.setZero();
+        for (size_t j = 0; j < feature_num; j++)
+            m.data[0][j] = feature_vector[j][i];
+        this->test_inMatVec.push_back(m);
+    }
+    // 将监督数据转化为矩阵存储
+    matrix n(tag_num);
+    for (size_t i = 0; i < size; i++) {
+        n.setZero();
+        for (size_t j = 0; j < tag_num; j++) n.data[0][j] = tag_vector[j][i];
+        this->test_tagMatVec.push_back(n);
     }
 }
 
@@ -184,4 +279,8 @@ void bpnn::train(size_t train_times, size_t batch_size) {
         affine2.weight -= affine2.dw * learning_rate;
         affine2.bias -= affine2.db * learning_rate;
     }
+    this->affineLayer1 = affine1;
+    this->sigmoidLayer = sigmoid;
+    this->affineLayer2 = affine2;
+    this->lastLayer = last;
 }

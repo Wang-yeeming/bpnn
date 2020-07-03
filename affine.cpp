@@ -1,5 +1,8 @@
 #include "affine.h"
 
+affLayer::affLayer() {
+}
+
 affLayer::affLayer(const matrix& w, const matrix& b) {
     this->weight = w;
     this->bias = b;

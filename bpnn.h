@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <random>
 
 #include "affine.h"   // Affine层
 #include "matrix.h"   // 矩阵运算类
@@ -15,7 +16,20 @@
 #include "softmax.h"  // Softmax层
 
 class bpnn {
+   private:
+    // affine层
+    affLayer affineLayer1;
+    affLayer affineLayer2;
+    // 激活函数层
+    sigLayer sigmoidLayer;
+    // 输出层
+    sofLayer lastLayer;
+
    public:
+    // 测试输入数据矩阵组
+    std::vector<matrix> test_inMatVec;
+    // 测试监督数据矩阵组
+    std::vector<matrix> test_tagMatVec;
     // 输入数据矩阵组
     std::vector<matrix> inMatVec;
     // 监督数据矩阵组
@@ -36,6 +50,8 @@ class bpnn {
     void readTestSet(std::string path);
     // 训练
     void train(size_t train_times, size_t batch_size);
+    // 精度
+    double accuracy();
 };
 
 #endif

@@ -10,8 +10,6 @@ class sofLayer {
    private:
     // 损失
     double loss;
-    // softmax的输出
-    matrix out;
     // 监督数据
     matrix tag;
     // 损失函数：交叉熵误差
@@ -20,6 +18,8 @@ class sofLayer {
     matrix softmax(const matrix& x);
 
    public:
+    // softmax的输出
+    matrix out;
     // 返回损失
     double forward(const matrix& X, const matrix& T);
     matrix backward(const matrix& dL);

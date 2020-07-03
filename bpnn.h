@@ -4,6 +4,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,35 +15,27 @@
 #include "softmax.h"  // Softmax层
 
 class bpnn {
-   private:
-    // 输入层节点数目
-    size_t input_num = 0;
-    // 输出层节点数目
-    size_t output_num = 0;
-
    public:
     // 输入数据矩阵组
     std::vector<matrix> inMatVec;
     // 监督数据矩阵组
     std::vector<matrix> tagMatVec;
+    // 输入层节点数目
+    size_t input_num = 0;
+    // 隐含层节点数目（1层）
+    size_t hidden_num = 0;
+    // 输出层节点数目
+    size_t output_num = 0;
     // 数据数量
     size_t size;
     // 构造器
-    bpnn(int input_size, int output_size);
-    // 析构器
-    ~bpnn();
+    bpnn(size_t input_size, size_t hidden_size, size_t output_size);
     // 读取训练集数据（csv格式）
     void readTrainSet(std::string path);
     // 读取测试集数据（csv格式）
     void readTestSet(std::string path);
     // 训练
-    void train();
-    // 生成Affine层
-    affLayer createAffineLayer(const matrix& weight, const matrix& bias);
-    // 生成Sigmoid层
-    sigLayer createSigmoidLayer();
-    // 生成Softmax with loss层
-    sofLayer createSoftmaxWithLossLayer();
+    void train(size_t train_times, size_t batch_size);
 };
 
 #endif

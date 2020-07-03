@@ -10,12 +10,14 @@
 
 static std::vector<std::string> cache;
 
-bpnn::bpnn(int input_size, int output_size) {
+bpnn::bpnn(size_t input_size, size_t hidden_size, size_t output_size) {
     this->input_num = input_size;
+    this->hidden_num = hidden_size;
     this->output_num = output_size;
+    this->size = 0;
+    this->inMatVec.clear();
+    this->tagMatVec.clear();
 }
-
-bpnn::~bpnn() {}
 
 void bpnn::readTrainSet(std::string path) {
     char data[128];  // 缓冲区
@@ -118,21 +120,68 @@ void bpnn::readTestSet(std::string path) {
     }
 }
 
-void bpnn::train() {
-    // 初始化
-}
-
-affLayer bpnn::createAffineLayer(const matrix& weight, const matrix& bias) {
-    affLayer* affine = new affLayer(weight, bias);
-    return *affine;
-}
-
-sigLayer bpnn::createSigmoidLayer() {
-    sigLayer* sigmoid = new sigLayer();
-    return *sigmoid;
-}
-
-sofLayer bpnn::createSoftmaxWithLossLayer() {
-    sofLayer* softmax = new sofLayer();
-    return *softmax;
+void bpnn::train(size_t train_times, size_t batch_size) {
+    TRY if (batch_size > this->size) throw "选取数据数目超出样本容量！";
+    CATCH
+    // 学习率
+    double learning_rate = 0.1;
+    // 初始化权值
+    matrix w1(this->input_num, this->hidden_num);
+    w1.randomMatrix(-1, 1);
+    // 初始化偏置
+    matrix b1(this->hidden_num);
+    // 初始化第一个Affine层
+    affLayer affine1(w1, b1);
+    // 初始化激活函数层
+    sigLayer sigmoid;
+    // 初始化权值
+    matrix w2(this->hidden_num, this->output_num);
+    w2.randomMatrix(-1, 1);
+    // 初始化偏置
+    matrix b2(this->output_num);
+    // 初始化第二个Affine层
+    affLayer affine2(w2, b2);
+    // 初始化输出层
+    sofLayer last;
+    // 随机抽取数据
+    std::default_random_engine eng;
+    eng.seed(time(NULL));
+    std::uniform_int_distribution<int> uni(0, this->size - 1);
+    // 存储随机的索引值并保证索引值不重复
+    std::set<size_t> s;
+    while (true) {
+        s.insert(uni(eng));
+        if (s.size() == batch_size) break;
+    }
+    // 转移到向量存储
+    std::vector<size_t> vec;
+    for (auto i : s) vec.push_back(i);
+    // 用于遍历索引值的随机数生成器
+    std::uniform_int_distribution<int> travel(0, batch_size - 1);
+    matrix a1 = b1;
+    matrix s1 = b1;
+    matrix a2 = b2;
+    double loss = 0;
+    matrix dout(this->output_num);
+    size_t index;
+    for (size_t i = 0; i < this->output_num; i++) dout.data[0][i] = 1;
+    // 开始训练
+    for (size_t i = 0; i < train_times; i++) {
+        index = vec[travel(eng)];
+        // 前向传播
+        a1 = affine1.forward(this->inMatVec[index]);
+        s1 = sigmoid.forward(a1);
+        a2 = affine2.forward(s1);
+        loss = last.forward(a2, this->tagMatVec[index]);
+        // 后向传播
+        a2 = last.backward(dout);
+        s1 = affine2.backward(a2);
+        a1 = sigmoid.backward(s1);
+        affine1.backward(a1);
+        // 更新参数
+        affine1.weight -= affine1.dw * learning_rate;
+        affine1.bias -= affine1.db * learning_rate;
+        affine2.weight -= affine2.dw * learning_rate;
+        affine2.bias -= affine2.db * learning_rate;
+    }
 }

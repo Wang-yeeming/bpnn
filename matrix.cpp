@@ -93,6 +93,11 @@ matrix matrix::operator=(const matrix& A) {
     return *this;
 }
 
+matrix matrix::operator-=(const matrix& A) {
+    matrix B(A.line, A.col);
+    return B - A;
+}
+
 matrix operator~(const matrix& A) {
     matrix B(A.col, A.line);
     for (int i = 0; i < B.line; i++)
@@ -113,6 +118,13 @@ matrix operator+(const matrix& A, const matrix& B) {
     for (int i = 0; i < C.line; i++)
         for (int j = 0; j < C.col; j++)
             C.data[i][j] = A.data[i][j] + B.data[i][j];
+    return C;
+}
+
+matrix operator+(const matrix& A, const double& B) {
+    matrix C(A.line, A.col);
+    for (int i = 0; i < C.line; i++)
+        for (int j = 0; j < C.col; j++) C.data[i][j] = A.data[i][j] + B;
     return C;
 }
 
@@ -143,9 +155,16 @@ matrix operator*(const matrix& A, const matrix& B) {
     matrix C(A.line, B.col);
     for (int i = 0; i < C.line; i++)
         for (int j = 0; j < C.col; j++)
-            for (int m = 0; m < C.line; m++)
+            for (int m = 0; m < A.col; m++)
                 C.data[i][j] += A.data[i][m] * B.data[m][j];
     return C;
+}
+
+matrix operator*(const matrix& A, const double& C) {
+    matrix B(A.line, A.col);
+    for (int i = 0; i < B.line; i++)
+        for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] * C;
+    return B;
 }
 
 matrix operator/(const matrix& A, const double& C) {
@@ -156,7 +175,7 @@ matrix operator/(const matrix& A, const double& C) {
         system("pause");
         exit(-1);
     }
-    matrix B = A;
+    matrix B(A.line, A.col);
     for (int i = 0; i < B.line; i++)
         for (int j = 0; j < B.col; j++) B.data[i][j] = A.data[i][j] / C;
     return B;

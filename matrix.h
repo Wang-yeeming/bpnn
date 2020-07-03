@@ -46,14 +46,19 @@ class matrix {
     double** output();
     // 深拷贝
     matrix operator=(const matrix& A);
+    matrix operator-=(const matrix& A);
     // 矩阵的转置
     friend matrix operator~(const matrix& A);
-    // 矩阵加法运算
+    // 矩阵加上矩阵
     friend matrix operator+(const matrix& A, const matrix& B);
+    // 矩阵加上常数
+    friend matrix operator+(const matrix& A, const double& B);
     // 矩阵减法运算
     friend matrix operator-(const matrix& A, const matrix& B);
     // 矩阵乘法运算
     friend matrix operator*(const matrix& A, const matrix& B);
+    // 矩阵乘以常数
+    friend matrix operator*(const matrix& A, const double& B);
     // 矩阵除以常数
     friend matrix operator/(const matrix& A, const double& C);
     // 格式化输出

@@ -13,5 +13,7 @@ matrix affLayer::forward(const matrix& A) {
 
 matrix affLayer::backward(const matrix& dL) {
     matrix dX = dL * (~this->weight);
+    this->dw = (~this->x) * dL;
+    this->db = dL;
     return dX;
 }

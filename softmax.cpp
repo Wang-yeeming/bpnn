@@ -6,8 +6,10 @@ double sofLayer::crossEntropyError(const matrix& x, const matrix& t) {
     } catch (const char* msg) {
         std::cerr << msg << std::endl;
     }
-    double error = 0;
-    for (int i = 0; i < x.col; i++) error -= t.data[0][i] * log(x.data[0][i]);
+    double sum = 0;
+    double delta = 1e-7;
+    for (int i = 0; i < x.col; i++) sum += t.data[0][i] * log(x.data[0][i] + delta);
+    double error = (-sum) / x.col;
     return error;
 }
 
@@ -26,8 +28,8 @@ matrix sofLayer::softmax(const matrix& x) {
 
 double sofLayer::forward(const matrix& X, const matrix& T) {
     this->tag = T;
-    this->loss = crossEntropyError(X, T);
     this->out = std::move(softmax(X));
+    this->loss = crossEntropyError(this->out, T);
     return this->loss;
 }
 

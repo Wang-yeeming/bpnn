@@ -44,6 +44,9 @@ class bpnn {
     size_t size;
     // 构造器
     bpnn(size_t input_size, size_t hidden_size, size_t output_size);
+    void setInputSize(size_t);
+    void setHiddenSize(size_t);
+    void setOutputSize(size_t);
     // 读取训练集数据（csv格式）
     void readTrainSet(std::string path);
     // 读取测试集数据（csv格式）
@@ -52,6 +55,8 @@ class bpnn {
     void train(size_t train_times, size_t batch_size);
     // 精度
     double accuracy();
+    // 预测
+    std::vector<double> predict(std::vector<double>);
 };
 
 #endif

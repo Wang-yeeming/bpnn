@@ -17,6 +17,12 @@ bpnn::bpnn(size_t input_size, size_t hidden_size, size_t output_size) {
     this->size = 0;
 }
 
+void bpnn::setInputSize(size_t s) { this->input_num = s; }
+
+void bpnn::setHiddenSize(size_t s) { this->hidden_num = s; }
+
+void bpnn::setOutputSize(size_t s) { this->output_num = s; }
+
 double bpnn::accuracy() {
     size_t test_size = this->test_inMatVec.size();
     affLayer affine1 = this->affineLayer1;
@@ -43,6 +49,22 @@ double bpnn::accuracy() {
         if (max1 == max2) right++;
     }
     return right / test_size;
+}
+
+std::vector<double> bpnn::predict(std::vector<double> vec) {
+    affLayer affine1 = this->affineLayer1;
+    affLayer affine2 = this->affineLayer2;
+    sigLayer sigmoid = this->sigmoidLayer;
+    sofLayer last = this->lastLayer;
+    matrix in(vec.size());
+    matrix a1, a2, s1;
+    for (size_t i = 0; i < vec.size(); i++) in.data[0][i] = vec[i];
+    a1 = affine1.forward(in);
+    s1 = sigmoid.forward(a1);
+    a2 = affine2.forward(s1);
+    vec.clear();
+    for (size_t i = 0; i < this->output_num; i++) vec.push_back(a2.data[0][i]);
+    return vec;
 }
 
 void bpnn::readTrainSet(std::string path) {

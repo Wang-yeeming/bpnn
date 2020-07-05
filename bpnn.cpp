@@ -318,8 +318,6 @@ size_t bpnn::train(size_t train_times, size_t batch_size) {
         // 更新参数
         affine1.weight -= affine1.dw * learning_rate;
         affine1.bias -= affine1.db * learning_rate;
-        std::cout << affine1.db << std::endl;
-        std::cout << affine1.bias << std::endl;
         affine2.weight -= affine2.dw * learning_rate;
         affine2.bias -= affine2.db * learning_rate;
         this->weight1 = affine1.weight;

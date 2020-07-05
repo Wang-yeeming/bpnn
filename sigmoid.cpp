@@ -8,16 +8,16 @@ double sigLayer::dsigmoid(double x) {
 
 matrix sigLayer::forward(const matrix& X) {
     matrix L(X.line, X.col);
-    for (int i = 0; i < L.line; i++)
-        for (int j = 0; j < L.col; j++)
+    for (size_t i = 0; i < L.line; i++)
+        for (size_t j = 0; j < L.col; j++)
             L.data[i][j] = this->sigmoid(X.data[i][j]);
     return L;
 }
 
 matrix sigLayer::backward(const matrix& dL) {
     matrix dX = dL;
-    for (int i = 0; i < dX.line; i++)
-        for (int j = 0; j < dX.col; j++)
+    for (size_t i = 0; i < dX.line; i++)
+        for (size_t j = 0; j < dX.col; j++)
             dX.data[i][j] = this->dsigmoid(dL.data[i][j]);
     return dX;
 }

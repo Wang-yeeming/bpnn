@@ -14,7 +14,6 @@ vector<double> v2;
 
 int main(int argc, char* argv[]) {
     while (true) {
-        v1.clear();
         cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓" << endl;
         cout << "┃    简易3层BP神经网络     ┃" << endl;
         cout << "┃                          ┃" << endl;
@@ -40,36 +39,47 @@ int main(int argc, char* argv[]) {
             cout << "> ";
             cin >> s3;
             nn.setOutputSize(s3);
-            cout << "输入csv格式的训练集" << endl;
+            cout << "输入csv格式的one-hot训练集" << endl;
             cout << "> ";
             cin >> path;
             nn.readTrainSet(path);
-            cout << "输入训练次数" << endl;
+            cout << "输入最大训练次数" << endl;
             cout << "> ";
             cin >> s2;
-            cout << "输入选取的样本数目" << endl;
+            cout << "输入mini-batch选取的样本数目" << endl;
             cout << "> ";
             cin >> s3;
             cout << "训练中......" << endl;
             tick = GetTickCount();
-            nn.train(s2, s3);
-            cout << "训练完成！用时" << (GetTickCount() - tick) / 1000 << "s"
-                 << endl;
+            s3 = nn.train(s2, s3);
+            cout << "训练完成！训练" << s3 << "次，用时"
+                 << (GetTickCount() - tick) / 1000 << "s" << endl;
             cout << "输入csv格式的测试集" << endl;
             cout << "> ";
             cin >> path;
             nn.readTestSet(path);
             cout << "精度：" << nn.accuracy() << endl;
             cout << "现在开始预测" << endl;
-            for (size_t i = 0; i < s1; i++) {
-                cout << "输入第" << i + 1 << "个特征" << endl;
+            while (true) {
+                v1.clear();
+                for (size_t i = 0; i < s1; i++) {
+                    cout << "输入第" << i + 1 << "个特征" << endl;
+                    cout << "> ";
+                    cin >> tick;
+                    v1.push_back(tick);
+                }
+                v2 = nn.predict(v1);
+                cout << "预测：";
+                s2 = 0;
+                for (size_t i = 0; i < v2.size(); i++)
+                    if (v2[s2] < v2[i]) s2 = i;
+                cout << "第" << s2 + 1 << "类" << endl;
+                cout << "如需退出请输入exit" << endl;
                 cout << "> ";
-                cin >> tick;
-                v1.push_back(tick);
+                cin >> path;
+                if (path.compare("exit") == 0) break;
             }
-            v2 = nn.predict(v1);
-            cout << "预测如下：" << endl;
-            for (auto i : v2) cout << i << "  " << endl;
+            cout << "成功退出" << endl;
         } else {
             cout << "无效的指令" << endl;
         }

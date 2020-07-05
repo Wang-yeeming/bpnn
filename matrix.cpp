@@ -94,8 +94,8 @@ matrix matrix::operator=(const matrix& A) {
 }
 
 matrix matrix::operator-=(const matrix& A) {
-    matrix B(A.line, A.col);
-    return B - A;
+    *this = *this - A;
+    return *this;
 }
 
 matrix operator~(const matrix& A) {
@@ -141,6 +141,13 @@ matrix operator-(const matrix& A, const matrix& B) {
     for (size_t i = 0; i < C.line; i++)
         for (size_t j = 0; j < C.col; j++)
             C.data[i][j] = A.data[i][j] - B.data[i][j];
+    return C;
+}
+
+matrix operator-(const double& B, const matrix& A) {
+    matrix C(A.line, A.col);
+    for (size_t i = 0; i < C.line; i++)
+        for (size_t j = 0; j < C.col; j++) C.data[i][j] = B - A.data[i][j];
     return C;
 }
 

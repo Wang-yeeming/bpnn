@@ -25,10 +25,10 @@ void bpnn::setOutputSize(size_t s) { this->output_num = s; }
 
 double bpnn::accuracy() {
     size_t test_size = this->test_inMatVec.size();
-    affLayer affine1 = this->affineLayer1;
-    affLayer affine2 = this->affineLayer2;
-    sigLayer sigmoid = this->sigmoidLayer;
-    sofLayer last = this->lastLayer;
+    affLayer affine1(this->weight1, this->bias1);
+    sigLayer sigmoid;
+    affLayer affine2(this->weight2, this->bias2);
+    sofLayer last;
     matrix a1, a2, s1, out;
     double right = 0;
     size_t max1, max2;
@@ -52,18 +52,22 @@ double bpnn::accuracy() {
 }
 
 std::vector<double> bpnn::predict(std::vector<double> vec) {
-    affLayer affine1 = this->affineLayer1;
-    affLayer affine2 = this->affineLayer2;
-    sigLayer sigmoid = this->sigmoidLayer;
-    sofLayer last = this->lastLayer;
+    affLayer affine1(this->weight1, this->bias1);
+    sigLayer sigmoid;
+    affLayer affine2(this->weight2, this->bias2);
+    sofLayer last;
     matrix in(vec.size());
-    matrix a1, a2, s1;
+    matrix a1, a2, s1, out;
+    matrix feak(this->output_num);
+    feak.randomMatrix(0, 1);
     for (size_t i = 0; i < vec.size(); i++) in.data[0][i] = vec[i];
     a1 = affine1.forward(in);
     s1 = sigmoid.forward(a1);
     a2 = affine2.forward(s1);
+    last.forward(a2, feak);
+    out = last.out;
     vec.clear();
-    for (size_t i = 0; i < this->output_num; i++) vec.push_back(a2.data[0][i]);
+    for (size_t i = 0; i < this->output_num; i++) vec.push_back(out.data[0][i]);
     return vec;
 }
 
@@ -107,7 +111,7 @@ void bpnn::readTrainSet(std::string path) {
     size_t tmp;
     size_t s = cache.size();
     double number;
-    size_t size_teger;
+    size_t integer;
     std::stringstream ss;
     // 将cache缓存的内容存到向量组内
     for (size_t i = 1; i <= feature_num + tag_num; i++) {
@@ -128,12 +132,16 @@ void bpnn::readTrainSet(std::string path) {
                     // 将监督存入监督向量
                     ss.clear();
                     ss << cache[j - 1];
-                    ss >> size_teger;
-                    tag_vector[i - feature_num - 1].push_back(size_teger);
+                    ss >> integer;
+                    tag_vector[i - feature_num - 1].push_back(integer);
                 }
             }
         }
     }
+    this->inMatVec.clear();
+    this->tagMatVec.clear();
+    this->test_inMatVec.clear();
+    this->test_tagMatVec.clear();
     this->size = feature_vector[0].size();
     // 将输入数据转化成矩阵存储
     matrix m(feature_num);
@@ -150,6 +158,9 @@ void bpnn::readTrainSet(std::string path) {
         for (size_t j = 0; j < tag_num; j++) n.data[0][j] = tag_vector[j][i];
         this->tagMatVec.push_back(n);
     }
+    // 测试精度用
+    this->test_inMatVec.assign(this->inMatVec.begin(), this->inMatVec.end());
+    this->test_tagMatVec.assign(this->tagMatVec.begin(), this->tagMatVec.end());
 }
 
 void bpnn::readTestSet(std::string path) {
@@ -192,7 +203,7 @@ void bpnn::readTestSet(std::string path) {
     size_t tmp;
     size_t s = cache.size();
     double number;
-    size_t size_teger;
+    size_t integer;
     std::stringstream ss;
     // 将cache缓存的内容存到向量组内
     for (size_t i = 1; i <= feature_num + tag_num; i++) {
@@ -213,13 +224,15 @@ void bpnn::readTestSet(std::string path) {
                     // 将监督存入监督向量
                     ss.clear();
                     ss << cache[j - 1];
-                    ss >> size_teger;
-                    tag_vector[i - feature_num - 1].push_back(size_teger);
+                    ss >> integer;
+                    tag_vector[i - feature_num - 1].push_back(integer);
                 }
             }
         }
     }
     this->size = feature_vector[0].size();
+    this->test_inMatVec.clear();
+    this->test_tagMatVec.clear();
     // 将输入数据转化成矩阵存储
     matrix m(feature_num);
     for (size_t i = 0; i < size; i++) {
@@ -237,60 +250,67 @@ void bpnn::readTestSet(std::string path) {
     }
 }
 
-void bpnn::train(size_t train_times, size_t batch_size) {
-    TRY if (batch_size > this->size) throw "选取数据数目超出样本容量！";
+size_t bpnn::train(size_t train_times, size_t batch_size) {
+    TRY if (batch_size >= this->size) throw "选取数据数目应小于样本容量！";
     CATCH
     // 学习率
-    double learning_rate = 0.1;
+    double learning_rate = 0.00005;
     // 初始化权值
     matrix w1(this->input_num, this->hidden_num);
-    w1.randomMatrix(-1, 1);
+    w1.randomMatrix(-4, 4);
     // 初始化偏置
-    matrix b1(this->hidden_num);
+    matrix b1(batch_size, this->hidden_num);
     // 初始化第一个Affine层
     affLayer affine1(w1, b1);
     // 初始化激活函数层
     sigLayer sigmoid;
     // 初始化权值
     matrix w2(this->hidden_num, this->output_num);
-    w2.randomMatrix(-1, 1);
+    w2.randomMatrix(-4, 4);
     // 初始化偏置
-    matrix b2(this->output_num);
+    matrix b2(batch_size, this->output_num);
     // 初始化第二个Affine层
     affLayer affine2(w2, b2);
     // 初始化输出层
     sofLayer last;
-    // 随机抽取数据
-    std::default_random_engine eng;
-    eng.seed(time(NULL));
-    std::uniform_int_distribution<int> uni(0, this->size - 1);
-    // 存储随机的索引值并保证索引值不重复
-    std::set<size_t> s;
-    while (true) {
-        s.insert(uni(eng));
-        if (s.size() == batch_size) break;
-    }
-    // 转移到向量存储
-    std::vector<size_t> vec;
-    for (auto i : s) vec.push_back(i);
-    // 用于遍历索引值的随机数生成器
-    std::uniform_int_distribution<int> travel(0, batch_size - 1);
     matrix a1 = b1;
     matrix s1 = b1;
     matrix a2 = b2;
     double loss = 0;
     matrix dout(this->output_num);
-    size_t index;
     for (size_t i = 0; i < this->output_num; i++) dout.data[0][i] = 1;
+    matrix xin(batch_size, this->input_num);
+    matrix tin(batch_size, this->output_num);
+    std::default_random_engine eng;
+    eng.seed(time(NULL));
+    std::uniform_int_distribution<int> uni(0, this->size - 1);
+    std::set<size_t> s;
+    std::vector<size_t> vec;
     // 开始训练
-    for (size_t i = 0; i < train_times; i++) {
-        index = vec[travel(eng)];
+    for (size_t k = 0; k < train_times; k++) {
+        s.clear();
+        vec.clear();
+        // 随机抽取数据
+        // 存储随机的索引值并保证索引值不重复
+        while (true) {
+            s.insert(uni(eng));
+            if (s.size() == batch_size) break;
+        }
+        // 转移到向量存储
+        for (auto i : s) vec.push_back(i);
+        // 拓展输入矩阵
+        for (size_t i = 0; i < xin.line; i++)
+            for (size_t j = 0; j < xin.col; j++)
+                xin.data[i][j] = this->inMatVec[vec[i]].data[0][j];
+        for (size_t i = 0; i < tin.line; i++)
+            for (size_t j = 0; j < tin.col; j++)
+                tin.data[i][j] = this->tagMatVec[vec[i]].data[0][j];
         // 前向传播
-        a1 = affine1.forward(this->inMatVec[index]);
+        a1 = affine1.forward(xin);
         s1 = sigmoid.forward(a1);
         a2 = affine2.forward(s1);
-        loss = last.forward(a2, this->tagMatVec[index]);
-        // 后向传播
+        loss = last.forward(a2, tin);
+        // 反向传播
         a2 = last.backward(dout);
         s1 = affine2.backward(a2);
         a1 = sigmoid.backward(s1);
@@ -298,11 +318,21 @@ void bpnn::train(size_t train_times, size_t batch_size) {
         // 更新参数
         affine1.weight -= affine1.dw * learning_rate;
         affine1.bias -= affine1.db * learning_rate;
+        std::cout << affine1.db << std::endl;
+        std::cout << affine1.bias << std::endl;
         affine2.weight -= affine2.dw * learning_rate;
         affine2.bias -= affine2.db * learning_rate;
+        this->weight1 = affine1.weight;
+        this->weight2 = affine2.weight;
+        this->bias1 = matrix(this->hidden_num);
+        for (size_t i = 0; i < this->hidden_num; i++)
+            for (size_t j = 0; j < batch_size; j++)
+                this->bias1.data[0][i] += affine1.bias.data[j][i];
+        this->bias2 = matrix(this->output_num);
+        for (size_t i = 0; i < this->output_num; i++)
+            for (size_t j = 0; j < batch_size; j++)
+                this->bias2.data[0][i] += affine2.bias.data[j][i];
+        if (this->accuracy() >= 0.7) return k;
     }
-    this->affineLayer1 = affine1;
-    this->sigmoidLayer = sigmoid;
-    this->affineLayer2 = affine2;
-    this->lastLayer = last;
+    return train_times;
 }

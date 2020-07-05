@@ -4,11 +4,11 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <random>
 
 #include "affine.h"   // Affine层
 #include "matrix.h"   // 矩阵运算类
@@ -17,13 +17,10 @@
 
 class bpnn {
    private:
-    // affine层
-    affLayer affineLayer1;
-    affLayer affineLayer2;
-    // 激活函数层
-    sigLayer sigmoidLayer;
-    // 输出层
-    sofLayer lastLayer;
+    matrix weight1;
+    matrix bias1;
+    matrix weight2;
+    matrix bias2;
 
    public:
     // 测试输入数据矩阵组
@@ -52,7 +49,7 @@ class bpnn {
     // 读取测试集数据（csv格式）
     void readTestSet(std::string path);
     // 训练
-    void train(size_t train_times, size_t batch_size);
+    size_t train(size_t train_times, size_t batch_size);
     // 精度
     double accuracy();
     // 预测

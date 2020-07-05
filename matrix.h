@@ -55,6 +55,8 @@ class matrix {
     friend matrix operator+(const matrix& A, const double& B);
     // 矩阵减法运算
     friend matrix operator-(const matrix& A, const matrix& B);
+    // 常数减去矩阵
+    friend matrix operator-(const double& A, const matrix& B);
     // 矩阵乘法运算
     friend matrix operator*(const matrix& A, const matrix& B);
     // 矩阵乘以常数

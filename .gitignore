@@ -5,4 +5,5 @@ bpnn.vcxproj.user
 *.csv
 .vs
 Debug
+Release
 *~

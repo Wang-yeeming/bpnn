@@ -1,6 +1,10 @@
 #include "matrix.h"
 
-matrix::matrix() {}
+matrix::matrix() {
+    this->line = 0;
+    this->col = 0;
+    this->data = nullptr;
+}
 
 matrix::matrix(size_t l, size_t c) {
     this->line = l;
@@ -24,15 +28,11 @@ matrix::matrix(const matrix& obj) {
         for (size_t j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
 }
 
-matrix::matrix(const matrix&& obj) {
+matrix::matrix(matrix&& obj) noexcept {
     this->line = obj.line;
     this->col = obj.col;
-    // 分配内存空间
-    this->data = new double*[obj.line];
-    for (size_t i = 0; i < obj.line; i++) this->data[i] = new double[obj.col];
-    // 拷贝值
-    for (size_t i = 0; i < obj.line; i++)
-        for (size_t j = 0; j < obj.col; j++) this->data[i][j] = obj.data[i][j];
+    this->data = obj.data;
+    obj.data = nullptr;
 }
 
 matrix::matrix(size_t c) {
@@ -46,17 +46,18 @@ matrix::matrix(size_t c) {
 }
 
 matrix::~matrix() {
-    for (size_t i = 0; i < this->line; i++) delete[] this->data[i];
-
-    delete[] this->data;
+    if (this->data != nullptr) {
+        for (size_t i = 0; i < this->line; i++) delete[] this->data[i];
+        delete[] this->data;
+    }
 }
 
-void matrix::randomMatrix(double min, double max) {
+void matrix::randomMatrix(double mu, double sigma) {
     std::default_random_engine eng;
     eng.seed(time(NULL));
-    std::normal_distribution<double> n(min, max);
+    std::normal_distribution<double> nor(mu, sigma);
     for (size_t i = 0; i < this->line; i++)
-        for (size_t j = 0; j < this->col; j++) this->data[i][j] = n(eng);
+        for (size_t j = 0; j < this->col; j++) this->data[i][j] = nor(eng);
 }
 
 void matrix::setZero() {

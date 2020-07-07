@@ -31,13 +31,13 @@ class matrix {
     // 拷贝构造函数
     matrix(const matrix& obj);
     // 移动构造函数
-    matrix(const matrix&& obj);
+    matrix(matrix&& obj) noexcept;
     // 构造行向量
     matrix(size_t col);
     // 析构器
     ~matrix();
     // 生成随机数矩阵
-    void randomMatrix(double min, double max);
+    void randomMatrix(double mu, double sigma);
     // 矩阵清零
     void setZero();
     // 通过输入一维数组构造矩阵

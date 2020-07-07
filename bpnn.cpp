@@ -250,14 +250,16 @@ void bpnn::readTestSet(std::string path) {
     }
 }
 
-size_t bpnn::train(size_t train_times, size_t batch_size) {
+void bpnn::train(size_t train_times, size_t batch_size) {
     TRY if (batch_size >= this->size) throw "选取数据数目应小于样本容量！";
     CATCH
     // 学习率
-    double learning_rate = 0.00005;
+    double learning_rate = 0.005;
+    double weight_init_std = 0.01;
     // 初始化权值
     matrix w1(this->input_num, this->hidden_num);
-    w1.randomMatrix(-4, 4);
+    w1.randomMatrix(0, 1);
+    w1 = w1 * weight_init_std;
     // 初始化偏置
     matrix b1(batch_size, this->hidden_num);
     // 初始化第一个Affine层
@@ -266,7 +268,8 @@ size_t bpnn::train(size_t train_times, size_t batch_size) {
     sigLayer sigmoid;
     // 初始化权值
     matrix w2(this->hidden_num, this->output_num);
-    w2.randomMatrix(-4, 4);
+    w2.randomMatrix(0, 1);
+    w2 = w2 * weight_init_std;
     // 初始化偏置
     matrix b2(batch_size, this->output_num);
     // 初始化第二个Affine层
@@ -306,31 +309,25 @@ size_t bpnn::train(size_t train_times, size_t batch_size) {
             for (size_t j = 0; j < tin.col; j++)
                 tin.data[i][j] = this->tagMatVec[vec[i]].data[0][j];
         // 前向传播
-        a1 = affine1.forward(xin);
-        s1 = sigmoid.forward(a1);
-        a2 = affine2.forward(s1);
-        loss = last.forward(a2, tin);
+        last.forward(affine2.forward(sigmoid.forward(affine1.forward(xin))),
+                     tin);
         // 反向传播
-        a2 = last.backward(dout);
-        s1 = affine2.backward(a2);
-        a1 = sigmoid.backward(s1);
-        affine1.backward(a1);
+        affine1.backward(
+            sigmoid.backward(affine2.backward(last.backward(dout))));
         // 更新参数
-        affine1.weight -= affine1.dw * learning_rate;
-        affine1.bias -= affine1.db * learning_rate;
-        affine2.weight -= affine2.dw * learning_rate;
-        affine2.bias -= affine2.db * learning_rate;
-        this->weight1 = affine1.weight;
-        this->weight2 = affine2.weight;
-        this->bias1 = matrix(this->hidden_num);
-        for (size_t i = 0; i < this->hidden_num; i++)
-            for (size_t j = 0; j < batch_size; j++)
-                this->bias1.data[0][i] += affine1.bias.data[j][i];
-        this->bias2 = matrix(this->output_num);
-        for (size_t i = 0; i < this->output_num; i++)
-            for (size_t j = 0; j < batch_size; j++)
-                this->bias2.data[0][i] += affine2.bias.data[j][i];
-        if (this->accuracy() >= 0.7) return k;
+        affine1.weight =
+            std::move(affine1.weight - (affine1.dw * learning_rate));
+        affine1.bias = std::move(affine1.bias - (affine1.db * learning_rate));
+        affine2.weight =
+            std::move(affine2.weight - (affine2.dw * learning_rate));
+        affine2.bias = std::move(affine2.bias - (affine2.db * learning_rate));
     }
-    return train_times;
+    this->weight1 = affine1.weight;
+    this->weight2 = affine2.weight;
+    this->bias1 = matrix(this->hidden_num);
+    for (size_t i = 0; i < this->hidden_num; i++)
+        this->bias1.data[0][i] = affine1.bias.data[0][i];
+    this->bias2 = matrix(this->output_num);
+    for (size_t i = 0; i < this->output_num; i++)
+        this->bias2.data[0][i] = affine2.bias.data[0][i];
 }

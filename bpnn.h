@@ -49,7 +49,7 @@ class bpnn {
     // 读取测试集数据（csv格式）
     void readTestSet(std::string path);
     // 训练
-    size_t train(size_t train_times, size_t batch_size);
+    void train(size_t train_times, size_t batch_size);
     // 精度
     double accuracy();
     // 预测

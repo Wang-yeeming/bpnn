@@ -27,14 +27,14 @@ matrix sofLayer::softmax(const matrix& x) {
 }
 
 double sofLayer::forward(const matrix& X, const matrix& T) {
-    this->tag = T;
+    this->tag = std::move(T);
     this->out = std::move(softmax(X));
     this->loss = crossEntropyError(this->out, T);
     return this->loss;
 }
 
 matrix sofLayer::backward(const matrix& dL) {
-    int size = this->tag.col;
-    matrix dX = (this->out - this->tag) / (double)size;
+    int size = this->tag.line;
+    matrix dX = std::move((this->out - this->tag) / (double)size);
     return dX;
 }

@@ -7,6 +7,7 @@
 
 class sigLayer {
    private:
+    matrix out;
     double sigmoid(double x);
     double dsigmoid(double x);
 

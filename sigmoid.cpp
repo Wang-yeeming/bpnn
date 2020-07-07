@@ -11,13 +11,15 @@ matrix sigLayer::forward(const matrix& X) {
     for (size_t i = 0; i < L.line; i++)
         for (size_t j = 0; j < L.col; j++)
             L.data[i][j] = this->sigmoid(X.data[i][j]);
-    return L;
+    this->out = std::move(L);
+    return this->out;
 }
 
 matrix sigLayer::backward(const matrix& dL) {
-    matrix dX = dL;
+    matrix dX(dL.line, dL.col);
     for (size_t i = 0; i < dX.line; i++)
         for (size_t j = 0; j < dX.col; j++)
-            dX.data[i][j] = this->dsigmoid(dL.data[i][j]);
+            dX.data[i][j] =
+                dL.data[i][j] * this->dsigmoid(this->out.data[i][j]);
     return dX;
 }

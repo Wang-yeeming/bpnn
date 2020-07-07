@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
             cout << "> ";
             cin >> path;
             nn.readTrainSet(path);
-            cout << "输入最大训练次数" << endl;
+            cout << "输入训练次数" << endl;
             cout << "> ";
             cin >> s2;
             cout << "输入mini-batch选取的样本数目" << endl;
@@ -51,9 +51,9 @@ int main(int argc, char* argv[]) {
             cin >> s3;
             cout << "训练中......" << endl;
             tick = GetTickCount();
-            s3 = nn.train(s2, s3);
-            cout << "训练完成！训练" << s3 << "次，用时"
-                 << (GetTickCount() - tick) / 1000 << "s" << endl;
+            nn.train(s2, s3);
+            cout << "训练完成！用时" << (GetTickCount() - tick) / 1000 << "s"
+                 << endl;
             cout << "输入csv格式的测试集" << endl;
             cout << "> ";
             cin >> path;

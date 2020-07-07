@@ -11,7 +11,6 @@ class sofLayer {
     // 损失
     double loss;
     // 监督数据
-    matrix tag;
     // 损失函数：交叉熵误差
     double crossEntropyError(const matrix& x, const matrix& t);
     // softmax函数：将输出结果转换为概率
@@ -19,6 +18,7 @@ class sofLayer {
 
    public:
     // softmax的输出
+       matrix tag;
     matrix out;
     // 返回损失
     double forward(const matrix& X, const matrix& T);

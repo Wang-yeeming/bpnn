@@ -86,11 +86,27 @@ matrix matrix::operator=(const matrix& A) {
     this->line = A.line;
     this->col = A.col;
     // 分配内存空间
+    if (this->data != nullptr) {
+        for (size_t i = 0; i < A.line; i++) delete[] this->data[i];
+        delete[] this->data;
+    }
     this->data = new double*[A.line];
     for (size_t i = 0; i < A.line; i++) this->data[i] = new double[A.col];
     // 拷贝值
     for (size_t i = 0; i < A.line; i++)
         for (size_t j = 0; j < A.col; j++) this->data[i][j] = A.data[i][j];
+    return *this;
+}
+
+matrix& matrix::operator=(matrix&& A) noexcept {
+    this->line = A.line;
+    this->col = A.col;
+    if (this->data != nullptr) {
+        for (size_t i = 0; i < A.line; i++) delete[] this->data[i];
+        delete[] this->data;
+    }
+    this->data = A.data;
+    A.data = nullptr;
     return *this;
 }
 

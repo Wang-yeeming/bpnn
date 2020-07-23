@@ -46,6 +46,8 @@ class matrix {
     double** output();
     // 深拷贝
     matrix operator=(const matrix& A);
+    // 移动
+    matrix& operator=(matrix&& A) noexcept;
     matrix operator-=(const matrix& A);
     // 矩阵的转置
     friend matrix operator~(const matrix& A);

@@ -1,9 +1,21 @@
-#include <Windows.h>
+#include <windows.h>
+#ifdef _DEBUG
+#define DEBUG_CLIENTBLOCK new(_CLIENT_BLOCK, __FILE__, __LINE__)
+#else
+#define DEBUG_CLIENTBLOCK
+#endif  // _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#include <stdlib.h>
+#ifdef _DEBUG
+#define new DEBUG_CLIENTBLOCK
+#endif  // _DEBUG
 
 #include "bpnn.h"
 
 using namespace std;
 
+/* ----- simple UI global variables ----- */
 int key1 = 1024;
 bpnn nn(0, 0, 0);
 size_t s1, s2, s3;
@@ -13,6 +25,10 @@ vector<double> v1;
 vector<double> v2;
 
 int main(int argc, char* argv[]) {
+    /* ----- check memory leaks ----- */
+    //_CrtSetBreakAlloc(1153);
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    /* ----- simple UI ----- */
     while (true) {
         cout << "©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©·" << endl;
         cout << "©§    ¼òÒ×3²ãBPÉñ¾­ÍøÂç     ©§" << endl;

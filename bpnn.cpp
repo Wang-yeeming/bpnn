@@ -161,6 +161,9 @@ void bpnn::readTrainSet(std::string path) {
     // 测试精度用
     this->test_inMatVec.assign(this->inMatVec.begin(), this->inMatVec.end());
     this->test_tagMatVec.assign(this->tagMatVec.begin(), this->tagMatVec.end());
+    delete[] feature_vector;
+    delete[] tag_vector;
+    cache.clear();
 }
 
 void bpnn::readTestSet(std::string path) {
@@ -248,6 +251,9 @@ void bpnn::readTestSet(std::string path) {
         for (size_t j = 0; j < tag_num; j++) n.data[0][j] = tag_vector[j][i];
         this->test_tagMatVec.push_back(n);
     }
+    delete[] feature_vector;
+    delete[] tag_vector;
+    cache.clear();
 }
 
 void bpnn::train(size_t train_times, size_t batch_size) {
@@ -315,12 +321,10 @@ void bpnn::train(size_t train_times, size_t batch_size) {
         affine1.backward(
             sigmoid.backward(affine2.backward(last.backward(dout))));
         // 更新参数
-        affine1.weight =
-            std::move(affine1.weight - (affine1.dw * learning_rate));
-        affine1.bias = std::move(affine1.bias - (affine1.db * learning_rate));
-        affine2.weight =
-            std::move(affine2.weight - (affine2.dw * learning_rate));
-        affine2.bias = std::move(affine2.bias - (affine2.db * learning_rate));
+        affine1.weight = affine1.weight - (affine1.dw * learning_rate);
+        affine1.bias = affine1.bias - (affine1.db * learning_rate);
+        affine2.weight = affine2.weight - (affine2.dw * learning_rate);
+        affine2.bias = affine2.bias - (affine2.db * learning_rate);
     }
     this->weight1 = affine1.weight;
     this->weight2 = affine2.weight;

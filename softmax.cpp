@@ -23,11 +23,12 @@ matrix sofLayer::softmax(const matrix& x) {
     for (size_t i = 0; i < x.line; i++)
         for (size_t j = 0; j < x.col; j++)
             y.data[i][j] = exp(x.data[i][j] - max) / sum[i];
+    delete[] sum;
     return y;
 }
 
 double sofLayer::forward(const matrix& X, const matrix& T) {
-    this->tag = std::move(T);
+    this->tag = T;
     this->out = std::move(softmax(X));
     this->loss = crossEntropyError(this->out, T);
     return this->loss;

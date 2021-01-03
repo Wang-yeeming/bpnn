@@ -7,3 +7,5 @@ bpnn.vcxproj.user
 Debug
 Release
 *~
+*.txt
+data

@@ -31,6 +31,8 @@ class bpnn {
     std::vector<matrix> inMatVec;
     // 监督数据矩阵组
     std::vector<matrix> tagMatVec;
+    // 损失
+    std::vector<double> lossVec;
     // 输入层节点数目
     size_t input_num = 0;
     // 隐含层节点数目（1层）

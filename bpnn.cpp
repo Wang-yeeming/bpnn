@@ -260,7 +260,7 @@ void bpnn::train(size_t train_times, size_t batch_size) {
     TRY if (batch_size >= this->size) throw "选取数据数目应小于样本容量！";
     CATCH
     // 学习率
-    double learning_rate = 0.005;
+    double learning_rate = 0.0005;
     double weight_init_std = 0.01;
     // 初始化权值
     matrix w1(this->input_num, this->hidden_num);
@@ -282,9 +282,6 @@ void bpnn::train(size_t train_times, size_t batch_size) {
     affLayer affine2(w2, b2);
     // 初始化输出层
     sofLayer last;
-    matrix a1 = b1;
-    matrix s1 = b1;
-    matrix a2 = b2;
     double loss = 0;
     matrix dout(this->output_num);
     for (size_t i = 0; i < this->output_num; i++) dout.data[0][i] = 1;
@@ -295,6 +292,7 @@ void bpnn::train(size_t train_times, size_t batch_size) {
     std::uniform_int_distribution<int> uni(0, this->size - 1);
     std::set<size_t> s;
     std::vector<size_t> vec;
+    this->lossVec.clear();
     // 开始训练
     for (size_t k = 0; k < train_times; k++) {
         s.clear();
@@ -315,8 +313,9 @@ void bpnn::train(size_t train_times, size_t batch_size) {
             for (size_t j = 0; j < tin.col; j++)
                 tin.data[i][j] = this->tagMatVec[vec[i]].data[0][j];
         // 前向传播
-        last.forward(affine2.forward(sigmoid.forward(affine1.forward(xin))),
+        loss = last.forward(affine2.forward(sigmoid.forward(affine1.forward(xin))),
                      tin);
+        this->lossVec.push_back(loss);
         // 反向传播
         affine1.backward(
             sigmoid.backward(affine2.backward(last.backward(dout))));
